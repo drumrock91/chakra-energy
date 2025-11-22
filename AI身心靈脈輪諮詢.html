@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI諮詢身靈連結 - 心智脈輪能量繪圖</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #7158e2; /* 配合身心靈主題的神秘紫 */
+            --secondary-color: #ff9f43;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-light: #636e72;
+        }
+
+        body {
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .header-banner {
+            background: linear-gradient(120deg, #a55eea, #4b7bec);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 10px 20px rgba(165, 94, 234, 0.2);
+        }
+
+        .header-banner h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: 1px; }
+        .header-banner p { margin-top: 10px; opacity: 0.9; font-size: 1.1rem; }
+
+        .container {
+            max-width: 800px;
+            margin: -30px auto 40px; /* 往上推疊加在 header 上 */
+            padding: 0 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        h2.section-title {
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .intro-text {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* 問卷區塊樣式 */
+        .chakra-group {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chakra-group h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            color: #2d3436;
+        }
+
+        .chakra-color-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 兩欄排列 */
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; } /* 手機改單欄 */
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .checkbox-item:hover { background: #f0f2f5; }
+        .checkbox-item input { margin-right: 12px; transform: scale(1.2); accent-color: var(--primary-color); }
+
+        .btn-generate {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(113, 88, 226, 0.4);
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .btn-generate:hover {
+            background: #5f27cd;
+            transform: translateY(-2px);
+        }
+
+        /* 結果頁樣式 */
+        #result-section { display: none; }
+        
+        .result-box {
+            border-top: 4px solid;
+            background-color: #fafafa;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        .insight-label {
+            font-weight: bold;
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .remedy-text {
+            color: #d63031;
+            font-weight: bold;
+        }
+
+        /* 美療師諮詢引導區 */
+        .consult-card {
+            background-color: #fff4e6;
+            border: 2px dashed #ffeaa7;
+        }
+
+        .script-box {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #fdcb6e;
+        }
+
+        .footer {
+            text-align: center;
+            color: #b2bec3;
+            font-size: 0.9rem;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-banner">
+    <h1>VIVISPA 身心靈脈輪諮詢</h1>
+    <p>心智脈輪能量繪圖 &mdash; 量身訂做從能量到肌膚的全面療癒</p>
+</div>
+
+<div class="container" id="quiz-section">
+    <div class="card">
+        <h2 class="section-title">🧘‍♀️ 脈輪能量檢測</h2>
+        <p class="intro-text">
+            我們的身體是流動的能量場。請根據您**當下的狀態**，勾選您最近有出現的感受或症狀。
+            系統將透過 AI 運算，找出需要特別關照的能量中心。
+        </p>
+
+        <form id="chakraForm">
+            <div class="chakra-group">
+                <h3><span class="chakra-color-dot" style="background:#d63031"></span>1. 第一輪 (安全感與歸屬感)</h3>
+                <div class="options-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="root"> 容易下肢水腫、無力</label>
+                    <label class="checkbox-item"><input type="checkbox" name="root"> 易胖體質</label>
+                    <label class="checkbox-item"><input type="checkbox" name="root"> 便秘問題</label>
+                    <label class="checkbox-item"><input type="checkbox" name="root"> 最近容易感到緊張</label>
+                    <label class="checkbox-item"><input type="checkbox" name="root"> 最近容易焦慮</label>
+                    <label class="checkbox-item"><input type="checkbox" name="root"> 最近經常做噩夢</label>
+                    <label class="checkbox-item"><input type="checkbox" name="root"> 容易感到沒有安全感</label>
+                </div>
+            </div>
+
+            <div class="chakra-group">
+                <h3><span class="chakra-color-dot" style="background:#e17055"></span>2. 第二輪 (情感流動與創造力)</h3>
+                <div class="options-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="sacral"> 最近容易頻尿</label>
+                    <label class="checkbox-item"><input type="checkbox" name="sacral"> 生理狀況不順 (婦科/泌尿)</label>
+                    <label class="checkbox-item"><input type="checkbox" name="sacral"> 腰酸背痛</label>
+                    <label class="checkbox-item"><input type="checkbox" name="sacral"> 感到情緒壓抑</label>
+                    <label class="checkbox-item"><input type="checkbox" name="sacral"> 缺乏創造力</label>
+                    <label class="checkbox-item"><input type="checkbox" name="sacral"> 容易生氣</label>
+                    <label class="checkbox-item"><input type="checkbox" name="sacral"> 遇到事情感到沒有想法</label>
+                </div>
+            </div>
+
+            <div class="chakra-group">
+                <h3><span class="chakra-color-dot" style="background:#fdcb6e"></span>3. 第三輪 (自我力量與自信)</h3>
+                <div class="options-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="solar"> 胃酸過多、胃脹氣</label>
+                    <label class="checkbox-item"><input type="checkbox" name="solar"> 腸道不順</label>
+                    <label class="checkbox-item"><input type="checkbox" name="solar"> 血糖/糖尿病相關問題</label>
+                    <label class="checkbox-item"><input type="checkbox" name="solar"> 經常感受壓力大</label>
+                    <label class="checkbox-item"><input type="checkbox" name="solar"> 最近覺得無力感</label>
+                    <label class="checkbox-item"><input type="checkbox" name="solar"> 容易順從他人</label>
+                    <label class="checkbox-item"><input type="checkbox" name="solar"> 比較沒自信</label>
+                </div>
+            </div>
+
+            <div class="chakra-group">
+                <h3><span class="chakra-color-dot" style="background:#00b894"></span>4. 第四輪 (愛與關係)</h3>
+                <div class="options-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="heart"> 容易感到胸悶</label>
+                    <label class="checkbox-item"><input type="checkbox" name="heart"> 容易手痠、手麻</label>
+                    <label class="checkbox-item"><input type="checkbox" name="heart"> 呼吸較短、不順暢</label>
+                    <label class="checkbox-item"><input type="checkbox" name="heart"> 非常在乎公平性</label>
+                    <label class="checkbox-item"><input type="checkbox" name="heart"> 不主動關心他人</label>
+                    <label class="checkbox-item"><input type="checkbox" name="heart"> 內心容易糾結</label>
+                    <label class="checkbox-item"><input type="checkbox" name="heart"> 不容易相信別人</label>
+                </div>
+            </div>
+
+            <div class="chakra-group">
+                <h3><span class="chakra-color-dot" style="background:#0984e3"></span>5. 第五輪 (真實表達)</h3>
+                <div class="options-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="throat"> 容易感冒</label>
+                    <label class="checkbox-item"><input type="checkbox" name="throat"> 肩頸僵硬</label>
+                    <label class="checkbox-item"><input type="checkbox" name="throat"> 聽力較弱</label>
+                    <label class="checkbox-item"><input type="checkbox" name="throat"> 不善溝通</label>
+                    <label class="checkbox-item"><input type="checkbox" name="throat"> 說話聲音較小</label>
+                    <label class="checkbox-item"><input type="checkbox" name="throat"> 表達詞彙較少</label>
+                    <label class="checkbox-item"><input type="checkbox" name="throat"> 害羞 / 不擅表達</label>
+                </div>
+            </div>
+
+            <div class="chakra-group">
+                <h3><span class="chakra-color-dot" style="background:#6c5ce7"></span>6. 第六輪 (直覺與洞察)</h3>
+                <div class="options-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="thirdEye"> 容易偏頭痛</label>
+                    <label class="checkbox-item"><input type="checkbox" name="thirdEye"> 視力不好 / 眼睛酸澀</label>
+                    <label class="checkbox-item"><input type="checkbox" name="thirdEye"> 睡眠品質差</label>
+                    <label class="checkbox-item"><input type="checkbox" name="thirdEye"> 容易分心</label>
+                    <label class="checkbox-item"><input type="checkbox" name="thirdEye"> 容易猶豫不決</label>
+                    <label class="checkbox-item"><input type="checkbox" name="thirdEye"> 缺乏想像力</label>
+                    <label class="checkbox-item"><input type="checkbox" name="thirdEye"> 記憶力差</label>
+                </div>
+            </div>
+
+            <div class="chakra-group">
+                <h3><span class="chakra-color-dot" style="background:#dfe6e9; border:1px solid #ccc"></span>7. 第七輪 (靈性連結)</h3>
+                <div class="options-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="crown"> 肌肉緊繃</label>
+                    <label class="checkbox-item"><input type="checkbox" name="crown"> 內分泌失調</label>
+                    <label class="checkbox-item"><input type="checkbox" name="crown"> 最近容易沒有精神</label>
+                    <label class="checkbox-item"><input type="checkbox" name="crown"> 容易疲倦</label>
+                    <label class="checkbox-item"><input type="checkbox" name="crown"> 覺得心裡空虛</label>
+                    <label class="checkbox-item"><input type="checkbox" name="crown"> 學習力不穩定</label>
+                    <label class="checkbox-item"><input type="checkbox" name="crown"> 內心煩躁</label>
+                </div>
+            </div>
+
+            <button type="button" class="btn-generate" onclick="calculateResults()">✨ 生成我的能量圖譜</button>
+        </form>
+    </div>
+</div>
+
+<div class="container" id="result-section">
+    <div class="card">
+        <h2 class="section-title">📊 您的專屬能量圖譜</h2>
+        <p>透過雷達圖，您可以直觀看到目前七大脈輪的平衡狀態。向內凹陷的部分代表能量需要被特別關照。</p>
+        <div style="position: relative; height: 400px; width: 100%;">
+            <canvas id="radarChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="section-title">🌿 AI 能量平衡護理處方</h2>
+        <div id="advice-container">
+            </div>
+    </div>
+
+    <div class="card consult-card">
+        <h2 class="section-title">👩‍⚕️ 專家諮詢引導</h2>
+        <p>結合以下三個面向進行深層諮詢：</p>
+
+        <div class="script-box">
+            <strong>1. 【能量流動】整體平衡</strong><br>
+            <em>「如果將您的身體比喻為一條河流，您覺得它是流動順暢，還是在某處形成了淤積？」</em><br>
+            <small>👉 目的：引導客戶感知自我阻塞點，建議從腳到頭疏通的全身脈輪能量導引按摩。</small>
+        </div>
+
+        <div class="script-box">
+            <strong>2. 【色彩吸引力】視覺化直覺</strong><br>
+            <em>(展示脈輪卡)「此刻，您最被哪一種顏色所吸引？哪一種讓您感到排斥或無感？」</em><br>
+            <small>👉 目的：吸引代表潛意識需求，排斥代表課題。護理中應加強使用該色光譜。</small>
+        </div>
+
+        <div class="script-box">
+            <strong>3. 【身心共鳴】情緒與身體的對話</strong><br>
+            <em>「在感到壓力時，您是否發現身體的特定部位（如：肩頸、胃部、頭部）會首先出現緊繃或不適？」</em><br>
+            <small>👉 目的：直接連結身體症狀與脈輪，確認重點按摩部位與對應精油。</small>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <button class="btn-generate" style="background: #d63031;" onclick="alert('預約系統連結中... \n(此功能需串接後台)')">🎁 立即預約專屬療癒儀式</button>
+    </div>
+</div>
+
+<div class="footer">
+    <p>&copy; 2026 智能美業 AI 諮詢系統</p>
+</div>
+
+<script>
+    // 脈輪詳細資料庫 (根據文件內容)
+    const chakraInfo = {
+        root: {
+            name: "海底輪",
+            color: "#d63031", // 紅
+            insight: "此題探測與大地連結的穩定感。代表海底輪可能失衡。",
+            remedy: "推薦使用【脈輪1號精油】，進行深層放鬆的按摩，加強【腿部】時間重建安全感。"
+        },
+        sacral: {
+            name: "臍輪",
+            color: "#e17055", // 橙
+            insight: "此題探測情感與創造的流動性。代表臍輪可能阻塞。",
+            remedy: "推薦使用【2號臍輪精油】，加強【腹部或骨盆腔】時間，重啟情感流動。"
+        },
+        solar: {
+            name: "胃輪",
+            color: "#fdcb6e", // 黃
+            insight: "此題探測個人力量的中心。代表太陽神經叢能量不足。",
+            remedy: "使用【3號胃輪精油】，加強【腹部或背部】時間增加按摩，點燃內在力量。"
+        },
+        heart: {
+            name: "心輪",
+            color: "#00b894", // 綠
+            insight: "此題探測愛與慈悲的能量。代表心輪需要被滋養。",
+            remedy: "使用【4號心輪精油】，加強【胸部與肩頸】的深度護理，學習敞開心房。"
+        },
+        throat: {
+            name: "喉輪",
+            color: "#0984e3", // 藍
+            insight: "此題探測真實表達的能力。代表喉輪需要被疏通。",
+            remedy: "使用【5號喉輪精油】，加強【肩頸及上背】護理，找回聲音的力量。"
+        },
+        thirdEye: {
+            name: "眉心輪",
+            color: "#6c5ce7", // 靛
+            insight: "此題探測內在直覺與清晰度。代表眉心輪需要被喚醒。",
+            remedy: "使用【6號眉心輪精油】，加強進行【額頭與太陽穴】的舒壓按摩，找回內在的指南針。"
+        },
+        crown: {
+            name: "頂輪",
+            color: "#b2bec3", // 紫/白 (這裡用灰白示意)
+            insight: "此題探測靈性連結的狀態。代表頂輪需要被啟動。",
+            remedy: "使用【7號頂輪精油】，加強進行【頭皮】舒壓與放鬆護理，連結更高的智慧。"
+        }
+    };
+
+    function calculateResults() {
+        const form = document.getElementById('chakraForm');
+        const formData = new FormData(form);
+        
+        // 每個脈輪 7 題，計算勾選數
+        // 分數邏輯：滿分 10 分，每勾選一個症狀扣 1.4 分 (7題全勾則趨近 0 分)
+        // 這樣勾選越多，雷達圖越往內縮 (代表能量越低/阻塞)
+        const scoreMap = {
+            root: 10, sacral: 10, solar: 10, heart: 10, 
+            throat: 10, thirdEye: 10, crown: 10
+        };
+
+        // 統計勾選數量
+        for (let [name, value] of formData.entries()) {
+            if (scoreMap.hasOwnProperty(name)) {
+                scoreMap[name] -= 1.4; 
+            }
+        }
+
+        // 修正負分並取整數
+        Object.keys(scoreMap).forEach(key => {
+            if(scoreMap[key] < 0) scoreMap[key] = 0;
+            scoreMap[key] = parseFloat(scoreMap[key].toFixed(1));
+        });
+
+        // 顯示結果頁
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+        window.scrollTo(0,0);
+
+        // 1. 繪製圖表
+        drawRadarChart(scoreMap);
+
+        // 2. 生成建議文字
+        generateAdvice(scoreMap);
+    }
+
+    function drawRadarChart(scores) {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['海底輪', '臍輪', '胃輪', '心輪', '喉輪', '眉心輪', '頂輪'],
+                datasets: [{
+                    label: '能量狀態 (數值越高越平衡)',
+                    data: [
+                        scores.root, scores.sacral, scores.solar, scores.heart, 
+                        scores.throat, scores.thirdEye, scores.crown
+                    ],
+                    backgroundColor: 'rgba(113, 88, 226, 0.2)',
+                    borderColor: 'rgba(113, 88, 226, 1)',
+                    pointBackgroundColor: [
+                        chakraInfo.root.color, chakraInfo.sacral.color, chakraInfo.solar.color,
+                        chakraInfo.heart.color, chakraInfo.throat.color, chakraInfo.thirdEye.color,
+                        chakraInfo.crown.color
+                    ],
+                    pointRadius: 5,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: { stepSize: 2 }
+                    }
+                }
+            }
+        });
+    }
+
+    function generateAdvice(scores) {
+        const container = document.getElementById('advice-container');
+        container.innerHTML = '';
+
+        // 找出分數最低的 3 個脈輪 (最需要療癒)
+        const sorted = Object.keys(scores).sort((a, b) => scores[a] - scores[b]);
+        const topIssues = sorted.slice(0, 3); // 取前三名
+
+        topIssues.forEach(key => {
+            // 如果分數很高(例如 > 8) 其實不需要特別顯示，但為了演示效果我們先都顯示最低的三個
+            if (scores[key] > 8.5) return; // 如果都很健康就不顯示
+
+            const info = chakraInfo[key];
+            const div = document.createElement('div');
+            div.className = 'result-box';
+            div.style.borderColor = info.color;
+            
+            div.innerHTML = `
+                <h3 style="color:${info.color}; margin-top:0;">${info.name} (能量需關注)</h3>
+                <span class="insight-label">🔍 能量透視：</span>
+                <p>${info.insight}</p>
+                <span class="insight-label">💆‍♀️ 療癒對策：</span>
+                <p class="remedy-text">${info.remedy}</p>
+            `;
+            container.appendChild(div);
+        });
+
+        if (container.innerHTML === '') {
+            container.innerHTML = '<p style="text-align:center; color:green; font-weight:bold;">恭喜您！您的脈輪能量狀態非常平衡穩定，請繼續保持目前的保養習慣。</p>';
+        }
+    }
+</script>
+
+</body>
+</html>
